@@ -1,0 +1,95 @@
+{
+	"skill": "GPSDtoMQTT",
+	"slotTypes": [
+		{
+			"name": "gpsLocation",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "gps"
+				},
+				{
+					"value": "location"
+				},
+				{
+					"value": "g p s"
+				}
+			]
+		},
+		{
+			"name": "gpsStart",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "start"
+				},
+				{
+					"value": "begin"
+				}
+			]
+		},
+		{
+			"name": "gpsStop",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "stop"
+				}
+			]
+		}
+	],
+	"intents": [
+		{
+			"name": "startSendingData",
+			"enabledByDefault": true,
+			"utterances": [
+				"{Start:=>gpsStart} tracking my {location:=>gpsLocation}",
+				"update my {location:=>gpsLocation}",
+				"{Start:=>gpsStart} the {gps:=>gpsLocation}"
+			],
+			"slots": [
+				{
+					"name": "gpsLocation",
+					"required": false,
+					"type": "gpsLocation",
+					"missingQuestion": ""
+				},
+				{
+					"name": "gpsStart",
+					"required": false,
+					"type": "gpsStart",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "stopSendingData",
+			"enabledByDefault": true,
+			"utterances": [
+				"{Stop:=>gpsStop} tracking my {location:=>gpsLocation}",
+				"{Stop:=>gpsStop} updating my {location:=>gpsLocation}",
+				"{Stop:=>gpsStop} the {gps:=>gpsLocation}"
+			],
+			"slots": [
+				{
+					"name": "gpsLocation",
+					"required": false,
+					"type": "gpsLocation",
+					"missingQuestion": ""
+				},
+				{
+					"name": "gpsStop",
+					"required": false,
+					"type": "gpsStop",
+					"missingQuestion": ""
+				}
+			]
+		}
+	]
+}

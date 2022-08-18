@@ -1,0 +1,20 @@
+{
+	"aliceMinVersion": "1.0.0-rc3",
+	"author": "LazzaAU",
+	"category": "information",
+	"conditions": {
+		"lang": [
+			"en"
+		]
+	},
+	"desc": "For those that may be constantly on the move, like in a RV or a boat. If you install a USB GPS receiver into a raspberry Pi and want to send that data via MQTT to somewhere like Home Assistant then you can do that with this skill. This will allow you to process the GPSD data to perhaps update your location settings , graph your journey etc.",
+	"icon": "fas fa-map",
+	"maintainers": [],
+	"name": "GPSDtoMQTT",
+	"pipRequirements": [
+		"gpsdclient"
+	],
+	"speakableName": "GPS Data",
+	"systemRequirements": [],
+	"version": "1.0.0"
+}

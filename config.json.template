@@ -1,0 +1,56 @@
+{
+	"receivingMqttBroker": {
+		"defaultValue": "",
+		"dataType": "string",
+		"isSensitive": false,
+		"description": "Adds the IP address of the recieving MQTT Broker"
+	},
+	"enableLogging": {
+		"defaultValue": false,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Will display GPSD logs for 1 minute in alices syslog"
+	},
+	"runTillStopped": {
+		"defaultValue": true,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Will send messages constantly until asked to stop tracking my location"
+	},
+	"runOnBoot": {
+		"defaultValue": true,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Will send messages constantly on bootup without needing verbal instructions"
+	},
+	"mqttPassword": {
+		"defaultValue": "",
+		"dataType": "string",
+		"isSensitive": true,
+		"description": "The MQTT password of the receiving broker"
+	},
+	"mqttUsername": {
+		"defaultValue": "",
+		"dataType": "string",
+		"isSensitive": false,
+		"description": "The MQTT username of the receiving broker"
+	},
+	"gpsDeviceName": {
+		"defaultValue": "GPSreceiver",
+		"dataType": "string",
+		"isSensitive": false,
+		"description": "The name you give to the GPS reciever device"
+	},
+	"mqttPort": {
+		"defaultValue": 1883,
+		"dataType": "integer",
+		"isSensitive": false,
+		"description": "The port of the receiving MQTT Broker"
+	},
+	"secondsBetweenMessages": {
+		"defaultValue": 60,
+		"dataType": "integer",
+		"isSensitive": false,
+		"description": "The port of the receiving MQTT Broker"
+	}
+}

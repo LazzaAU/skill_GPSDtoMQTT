@@ -1,0 +1,22 @@
+{
+	"Starting": {
+		"default": [
+			"location updated",
+			"all done, location is now being tracked",
+			"Ok, GPS data is now on its way into cyber space"
+		],
+		"short": [
+			"ok"
+		]
+	},
+	"Ending": {
+		"default": [
+			"I've stopped logging GPS data",
+			"location data has been stopped",
+			"It's official, I'm no longer sending your location details"
+		],
+		"short": [
+			"GPS stopped"
+		]
+	}
+}
