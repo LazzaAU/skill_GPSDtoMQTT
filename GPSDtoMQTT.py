@@ -4,7 +4,7 @@ from core.util.Decorators import IntentHandler
 import random
 import json
 
-
+from datetime import datetime
 from paho.mqtt import client as mqtt_client
 from gpsdclient import GPSDClient
 
@@ -225,6 +225,7 @@ class GPSDtoMQTT(AliceSkill):
 		# machine so you can usually leave this as it is
 		if self.getConfig(key="enableLogging"):
 			self.logWarning(f"Raw Data from your GPS device is ...")
+		now = datetime.now()
 		# Create json payload
 		for result in gpsClient.dict_stream():
 
@@ -240,11 +241,14 @@ class GPSDtoMQTT(AliceSkill):
 				# format is :
 				# 'the name of the data field' : result["the name associated with the value that gpsd ouputs"]
 				# my gpsd example output = {'class': 'TPV', 'device': '/dev/ttyACM0', 'status': 2, 'mode': 2, 'time': datetime.datetime(2022, 8, 10, 1, 38, 2), 'ept': 0.005, 'lat': -xx.351406667, 'lon': xxx.5549935, 'epx': 2.387, 'epy': 2.7, 'track': 0.0, 'speed': 0.09, 'eps': 5.4}
+
+				lastUpdated = now.strftime("%d/%m/%Y %H:%M:%S")
 				gpsPayload = {
 					'source_type': 'gps',
 					'latitude': result["lat"],
 					'longitude': result["lon"],
 					'speed': result["speed"],
+					'last_Update': lastUpdated,
 					#'ept': result["ept"],
 					#'epx': result["epx"],
 					#'epy': result["epy"],
