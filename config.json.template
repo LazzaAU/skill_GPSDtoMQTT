@@ -9,7 +9,7 @@
 		"defaultValue": false,
 		"dataType": "boolean",
 		"isSensitive": false,
-		"description": "Will display GPSD logs for 1 minute in alices syslog"
+		"description": "Will display GPSD logs in alices syslog"
 	},
 	"runTillStopped": {
 		"defaultValue": true,
@@ -51,6 +51,6 @@
 		"defaultValue": 60,
 		"dataType": "integer",
 		"isSensitive": false,
-		"description": "The port of the receiving MQTT Broker"
+		"description": "The interval in seconds between each MQTT messaage "
 	}
 }
