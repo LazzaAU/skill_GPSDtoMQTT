@@ -200,7 +200,7 @@ class GPSDtoMQTT(AliceSkill):
 			if status == 0 :
 				if self.getConfig(key="enableLogging"):
 					self.logWarning(f"Data sent to the topic {self.mqttTopic}/attributes... ")
-					self.logDebug(f"Sent `{attributePayload}` to topic ``")
+					self.logDebug(f"Sent --> `{attributePayload}` to topic ``")
 					self.logWarning(f"Data sent to the topic {self.mqttTopic}/config ....")
 					self.logDebug(f'{configPayload} ')
 
