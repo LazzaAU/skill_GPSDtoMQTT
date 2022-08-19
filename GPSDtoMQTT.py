@@ -245,6 +245,7 @@ class GPSDtoMQTT(AliceSkill):
 				lastUpdated = now.strftime("%d/%m/%Y %H:%M:%S")
 				gpsPayload = {
 					'source_type': 'gps',
+					'gps_accuracy': '1.0',
 					'latitude': result["lat"],
 					'longitude': result["lon"],
 					'speed': result["speed"],
