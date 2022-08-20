@@ -3,7 +3,9 @@ from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 import random
 import json
+import csv
 
+from pathlib import Path
 from datetime import datetime
 from paho.mqtt import client as mqtt_client
 from gpsdclient import GPSDClient
@@ -18,10 +20,14 @@ class GPSDtoMQTT(AliceSkill):
 	"""
 	def __init__(self):
 
+		self.csvFile = Path
+		self.lat :float = 0.0
+		self.lon :float = 0.0
 		self.delay = float
 		self.runLoop = True # True means loop will repeat, false will stop the loop
 		self.mqttTopic = str
 		self.clientId = f'gpsdata-{random.randint(0, 1000)}'
+		self.numberOfLines = 0
 		super().__init__()
 
 	# Triggers from the start tracking my location intent
@@ -67,9 +73,16 @@ class GPSDtoMQTT(AliceSkill):
 		else:
 			self.delay = self.getConfig(key="secondsBetweenMessages")
 
-		# initiate MQTT connection
-		client = self.connectMqtt()
-		client.loop_start()
+		# Set csv file path and line count
+		self.csvFile  = self.getResource('LocationMapper.csv')
+
+		# initiate MQTT connection if user has provided details
+		if self.getConfig("receivingMqttBroker"):
+			client = self.connectMqtt()
+			client.loop_start()
+		else:
+			self.logWarning("Please enter your MQTT broker details in the skill settings")
+			return
 
 		self.GpsPublish(client)
 
@@ -78,7 +91,6 @@ class GPSDtoMQTT(AliceSkill):
 		"""
 		loops through the publish method every "self.delay" seconds
 		if the user has runTillStopped enabled in the settings
-
 		:param client: The Paho MQTT Client
 		:return: Nothing
 		"""
@@ -117,7 +129,7 @@ class GPSDtoMQTT(AliceSkill):
 		"""
 		Captures a MQTT disconnect event and tries to reconnect
 		:param client: The Paho MQTT client
-		:param userdata: Not Used
+		:userdata: Not Used but cant delete it either
 		:param rc: The Paho MQTT code
 		:return: nothing
 		"""
@@ -145,12 +157,13 @@ class GPSDtoMQTT(AliceSkill):
 	def mqttConnectionStatus(self, client, userdata, flags, rc):
 		"""
 		Informs the user when Broker connection is established or not when first connecting
-		:param client: The Paho MQTT client
-		:param userdata: Not Used
+		:client: not used
+		:userdata: not used
+		:flags: not used
 		:param rc: The Paho MQTT code
 		:return: Nothing
 		"""
-
+		#
 		if rc == 0:
 			self.logInfo("Connected to GPS MQTT Broker!........")
 		else:
@@ -165,11 +178,11 @@ class GPSDtoMQTT(AliceSkill):
 		- ConfigPayload is a static payload that Home Assistant requires
 		- StatePayload is also a static payload to indicate to Home assistant the device is "Home":param client:
 
-		This methos also Publishes the above topics to the MQTT Broker and if enabled in settings it then loops
+		This method also publishes the above topics to the MQTT Broker and if enabled in settings it then loops
 		back on its self.
 
-		:param client: the Paho MQTT client
-		:return: Nothing
+		param client: the Paho MQTT client
+		return: Nothing
 		"""
 
 		attributePayload = self.getGpsdData() # This Sets "attributePayload" to what ever the result of getGpsdData returns (see method further down)
@@ -202,7 +215,7 @@ class GPSDtoMQTT(AliceSkill):
 					self.logWarning(f"Data sent to the topic {self.mqttTopic}/attributes... ")
 					self.logDebug(f"Sent --> `{attributePayload}` to topic ``")
 					self.logWarning(f"Data sent to the topic {self.mqttTopic}/config ....")
-					self.logDebug(f'{configPayload} ')
+					self.logDebug(f'sent --> {configPayload} ')
 
 					# The message to display in the log file if successfull/failed
 					self.logInfo(f'GPS Data was successfully sent')
@@ -241,8 +254,9 @@ class GPSDtoMQTT(AliceSkill):
 				# format is :
 				# 'the name of the data field' : result["the name associated with the value that gpsd ouputs"]
 				# my gpsd example output = {'class': 'TPV', 'device': '/dev/ttyACM0', 'status': 2, 'mode': 2, 'time': datetime.datetime(2022, 8, 10, 1, 38, 2), 'ept': 0.005, 'lat': -xx.351406667, 'lon': xxx.5549935, 'epx': 2.387, 'epy': 2.7, 'track': 0.0, 'speed': 0.09, 'eps': 5.4}
-
 				lastUpdated = now.strftime("%d/%m/%Y %H:%M:%S")
+				self.RecordToCSV(lattitude=result["lat"], longitude=result["lon"], time=lastUpdated,speed=result["speed"])
+
 				gpsPayload = {
 					'source_type': 'gps',
 					'gps_accuracy': '1.0',
@@ -257,4 +271,67 @@ class GPSDtoMQTT(AliceSkill):
 					#'eps': result["eps"],
 					'battery_level': 100
 				}
+
 				return gpsPayload
+
+	# record datain a CSV file for ploting on My Google Maps
+	def RecordToCSV(self, lattitude : float, longitude: float, time, speed):
+		"""
+		Checks to see if the latitude and longitude readings are different to previous value.
+		If they are it writes those values to a csv file.
+		"""
+		self.numberOfLines = self.csvFileChecks()
+		if not round(lattitude,2) == round(self.lat,2) and not round(longitude,2) == round(self.lon,2):
+			self.createCsvFile(latitude=lattitude, longitude=longitude, time=time, speed=speed)
+		else:
+			if self.getConfig('enableLogging'):
+				self.logInfo('Your position hasn\'t changed')
+
+	def createCsvFile(self, latitude:float, longitude: float, time, speed):
+		"""
+		Creates a CSV file in the skills main directory that records lattitude,longitude, time, speed and Name
+		This can later be used in googles "my maps" for example to plot your recorded locations
+		"""
+
+		# field names
+		fields = ['Latitude', 'Longitude', 'Time', 'Speed', 'Name']
+
+		# data rows of csv file
+		rows = [ [f'{latitude}', f'{longitude}', f'{time}', f'{speed}', f'Location {self.numberOfLines}'] ]
+
+		if not Path(self.csvFile).exists():
+			with open(self.csvFile, 'w+') as csvFile:
+				# write the header and the content
+				write = csv.writer(csvFile)
+				write.writerow(fields)
+				write.writerows(rows)
+			self.logInfo(f"Creating LocationMapper.csv file at {self.csvFile}")
+		else:
+			with open(self.csvFile, 'a') as csvFile:
+				# Append the content to a new row
+				write = csv.writer(csvFile)
+				write.writerows(rows)
+			if self.getConfig(key="enableLogging"):
+				self.logInfo("Updating location mapper file")
+		csvFile.close()
+
+	def csvFileChecks(self):
+		"""
+		Reads the number of lines in the locationMapper.csv file and returns the result
+		Also sets lat and lon vars for checking if location has changed
+		"""
+		# open file in read mode to get total line count
+		if Path(self.csvFile).exists():
+			self.numberOfLines = 0
+			with open(self.csvFile, 'r') as csvFile:
+				for count, line in enumerate(csvFile):
+					pass
+				numberOfLines = count + 1
+
+				self.lat = float(line.split(',')[0])
+				self.lon = float(line.split(',')[1])
+
+			csvFile.close()
+			return numberOfLines
+		else:
+			return 0

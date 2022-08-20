@@ -78,3 +78,16 @@ You can also stop the tracking by asking her to
 - stop tracking my location
 - stop updating my location
 
+# Location Mapper #
+For the purpose of mapping location changes in something like ```https://www.google.com/maps/d/```.
+This skill will create a LocationMapper.csv file in the skills main directory with 
+
+- Latitude
+- Longitude
+- The recorded time and date
+- The speed
+- Name
+
+This data only gets written if longitude and latitude is different to the previous value. 
+Handy for copy and pasting the csv values into a map program to record location changes
+and map out where you've been.

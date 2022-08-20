@@ -4,7 +4,7 @@
 
 For those that may be constantly on the move, like in a RV or a boat. If you install a USB GPS receiver into a raspberry Pi and want to send that data via MQTT to somewhere like Home Assistant then you can do that with this ProjectAlice skill. This will allow you to process the GPSD data to perhaps update your location settings , graph your journey etc.
 
-- Author: LazzaAU
+- Author: Lazza
 - Maintainers: N/A
 - Alice minimum version: 1.0.0
 - Languages:
