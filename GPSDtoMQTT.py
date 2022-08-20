@@ -225,7 +225,7 @@ class GPSDtoMQTT(AliceSkill):
 
 			else:
 				self.logWarning(f"Failed to send GPS data to topic {self.mqttTopic}/attributes and/or {self.mqttTopic}/config")
-	
+
 	def getGpsdData(self):
 		"""
 		Triggers the GPSD client and returns the required GPS data that has coordinates in it.
