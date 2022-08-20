@@ -325,6 +325,7 @@ class GPSDtoMQTT(AliceSkill):
 			self.numberOfLines = 0
 			with open(self.csvFile, 'r') as csvFile:
 				for count, line in enumerate(csvFile):
+					# loop until last line is read
 					pass
 				numberOfLines = count + 1
 
