@@ -8,7 +8,10 @@ it's running on (Raspberry PI) in a readable format.
 This skill takes the raw data from GPSD and sends it via MQTT to a MQTT broker on another device. 
 This can be handy if you're wanting to record location updates while on the move to something like 
 Home Assistant so that the "home" location can be automatically updated as you move. Ideal for those of us
-travelling in a caravan / RV or a boat.
+travelling in a caravan / RV or a boat. As this skill was originally coded for sending data to 
+Home Assistant it will send static configuration messages on a MQTT topic 
+```homeassistant/Your_MQTT_topic/config```
+and GPS values on the topic ```homeassistant/Your_MQTT_topic/attributes``` 
 
 # *Setup on Alice* #
 
