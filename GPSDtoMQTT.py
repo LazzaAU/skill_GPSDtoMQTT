@@ -28,6 +28,7 @@ class GPSDtoMQTT(AliceSkill):
 		self.mqttTopic = str
 		self.clientId = f'gpsdata-{random.randint(0, 1000)}'
 		self.numberOfLines = 0
+		self.decimalPlaces :int = 3
 		super().__init__()
 
 	# Triggers from the start tracking my location intent
@@ -75,6 +76,7 @@ class GPSDtoMQTT(AliceSkill):
 
 		# Set csv file path and line count
 		self.csvFile  = self.getResource('LocationMapper.csv')
+		self.decimalPlaces :int = self.getConfig('gpsAccuracy')
 
 		# initiate MQTT connection if user has provided details
 		if self.getConfig("receivingMqttBroker"):
@@ -239,6 +241,7 @@ class GPSDtoMQTT(AliceSkill):
 		if self.getConfig(key="enableLogging"):
 			self.logWarning(f"Raw Data from your GPS device is ...")
 		now = datetime.now()
+		self.decimalPlaces :int = self.getConfig('gpsAccuracy')
 		# Create json payload
 		for result in gpsClient.dict_stream():
 
@@ -280,8 +283,12 @@ class GPSDtoMQTT(AliceSkill):
 		Checks to see if the latitude and longitude readings are different to previous value.
 		If they are it writes those values to a csv file.
 		"""
+
 		self.numberOfLines = self.csvFileChecks()
-		if not round(lattitude,2) == round(self.lat,2) and not round(longitude,2) == round(self.lon,2):
+		if self.getConfig(f'enableLogging'):
+			self.logDebug(f'You currently have {self.numberOfLines} stored entries in the CSV file')
+
+		if not round(lattitude,self.decimalPlaces) == round(self.lat,self.decimalPlaces) and not round(longitude,self.decimalPlaces) == round(self.lon,self.decimalPlaces):
 			self.createCsvFile(latitude=lattitude, longitude=longitude, time=time, speed=speed)
 		else:
 			if self.getConfig('enableLogging'):
@@ -331,6 +338,9 @@ class GPSDtoMQTT(AliceSkill):
 
 				self.lat = float(line.split(',')[0])
 				self.lon = float(line.split(',')[1])
+				if self.getConfig('enableLogging'):
+					self.logDebug(f'Latitude with "{self.decimalPlaces}" decimal places is {round(self.lat,self.decimalPlaces)}')
+					self.logDebug(f'Longitude with "{self.decimalPlaces}" decimal places is {round(self.lon,self.decimalPlaces)}')
 
 			csvFile.close()
 			return numberOfLines

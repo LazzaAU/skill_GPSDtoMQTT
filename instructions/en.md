@@ -33,6 +33,11 @@ Home Assistant the same.
 - Enable "log till stopped" if you want constant messages sent at a set interval.
 Otherwise just one message will be sent if this is disabled.
 - Set the "seconds between messages" for the interval between sending the location data. default is 300 seconds (5 minutes)
+- gps Accuracy - set the decimal places you want to use for comparing your location of now and previous location coordinates. 
+This is used for determining if the location coordinates should be written to the csv file or not. 
+The higher the number the more accurate it gets and higher probability of writing minor/insignificant 
+location changes to the CSV file. The default value is 3 and in general is sufficent.
+
 
 # *Setup if using Home Assistant* #
 
