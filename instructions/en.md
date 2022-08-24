@@ -99,3 +99,19 @@ This skill will create a LocationMapper.csv file in the skills main directory wi
 This data only gets written if longitude and latitude is different to the previous value. 
 Handy for copy and pasting the csv values into a map program to record location changes
 and map out where you've been.
+
+# find my street address 
+
+You can also ask Alice questions regarding your location such as 
+- What's my address
+- What's my post code
+- Where am i ?
+- what road am i on ?
+
+and similar questions. Alice will then take your latitude and longitude details and convert them to a
+physical location. This is handy for us travellers such as caravanners, boaties and the likes that are
+always changing location. One of the issue i hate when travelling is having to look 
+up the new address and post code etc when ordering off amazon, now i can simply ask Alice, "what's my post code"
+or "what's my street address"
+
+NOTE: You need Internet connection for this to work

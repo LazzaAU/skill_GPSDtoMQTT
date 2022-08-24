@@ -1,10 +1,13 @@
+
 from core.base.model.AliceSkill import AliceSkill
 from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 import random
 import json
 import csv
+import socket
 
+from geopy.geocoders import Nominatim
 from pathlib import Path
 from datetime import datetime
 from paho.mqtt import client as mqtt_client
@@ -29,6 +32,7 @@ class GPSDtoMQTT(AliceSkill):
 		self.clientId = f'gpsdata-{random.randint(0, 1000)}'
 		self.numberOfLines = 0
 		self.decimalPlaces :int = 3
+		self.district = ""
 		super().__init__()
 
 	# Triggers from the start tracking my location intent
@@ -50,7 +54,83 @@ class GPSDtoMQTT(AliceSkill):
 			deviceUid=session.deviceUid
 		)
 		self.runLoop = False
-		self.logInfo("Stopping GPSD MQTT connection")
+		self.logInfo(self.randomTalk(text="systemMessage1"))
+
+	# gets the users physical address details
+	@IntentHandler('getAddressDetails')
+	def findPhysicalAddress(self, session: DialogSession, **_kwargs):
+
+		if self.lat == 0.0:
+			try:
+				self.GpsdSetup()
+			except:
+				self.logInfo(self.randomTalk(text="systemMessage2"))
+
+		# Check if we have internet, exit if we don't
+		if self.checkInternetConnection():
+			addressDetails :dict = self.getAddressByLocation(latitude=self.lat, longitude=self.lon)
+		else:
+			self.logWarning(self.randomTalk(text="systemMessage3"))
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text="dialogMessage4"),
+				deviceUid=session.deviceUid
+			)
+			return
+
+		addressSpecifics : dict = addressDetails['address']
+		#self.logInfo(f'address details are {addressSpecifics}')
+		try:
+			if "name" in session.slotValue("addressLookup"):
+				slot="name"
+				self.geoResponce(session=session, addressValue=addressSpecifics['tourism'], slotValue=slot)
+			elif "road" in session.slotValue("addressLookup"):
+				slot="road"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "region" in session.slotValue("addressLookup"):
+				slot="municipality"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "house number" in session.slotValue("addressLookup"):
+				slot="house_number"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "city" in session.slotValue("addressLookup"):
+				slot="city"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "district" in session.slotValue("addressLookup"):
+				slot='city_district'
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "country" in session.slotValue("addressLookup"):
+				slot="country"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "country code" in session.slotValue("addressLookup"):
+				slot="country_code"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+			elif "address" in session.slotValue("addressLookup") or "where am i" in session.slotValue("addressLookup") :
+				slot = addressDetails['display_name']
+				self.geoResponce(session=session, addressValue=slot, slotValue=slot)
+			elif "street address" in session.slotValue("addressLookup") :
+				street = addressSpecifics["road"]
+				number = addressSpecifics["house_number"]
+				city = addressSpecifics["city"]
+				postcode = addressSpecifics["postcode"]
+				slot = f'Your at {number} {street} in {city}. Post code is {postcode}'
+				self.geoResponce(session=session, addressValue=slot, slotValue="street address")
+			elif 'post code' in session.slotValue("addressLookup") or 'postal code' in session.slotValue("addressLookup"):
+				slot="postcode"
+				self.geoResponce(session=session, addressValue=addressSpecifics[slot], slotValue=slot)
+		except:
+			self.logInfo(self.randomTalk(text="systemMessage5", replace=[addressDetails]))
+
+	def geoResponce(self, session, addressValue, slotValue):
+		"""
+		Used for responding to address look up intents
+		"""
+		self.logInfo(self.randomTalk(text="systemMessage6", replace=[slotValue,addressValue]))
+		self.endDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text="dialogMessage7", replace=[slotValue, addressValue ]),
+			deviceUid=session.deviceUid
+		)
 
 	# Set up the Mqtt Topic and init the MQTT connection
 	def GpsdSetup(self):
@@ -69,10 +149,10 @@ class GPSDtoMQTT(AliceSkill):
 			self.mqttTopic = f"homeassistant/{self.getConfig('gpsDeviceName')}"
 
 		# Check user has set a message delay
-		if not self.getConfig(key="secondsBetweenMessages"):
+		if not self.getConfig(key='secondsBetweenMessages'):
 			self.delay = 300
 		else:
-			self.delay = self.getConfig(key="secondsBetweenMessages")
+			self.delay = self.getConfig(key='secondsBetweenMessages')
 
 		# Set csv file path and line count
 		self.csvFile  = self.getResource('LocationMapper.csv')
@@ -83,7 +163,7 @@ class GPSDtoMQTT(AliceSkill):
 			client = self.connectMqtt()
 			client.loop_start()
 		else:
-			self.logWarning("Please enter your MQTT broker details in the skill settings")
+			self.logWarning(self.randomTalk(text="systemMessage8"))
 			return
 
 		self.GpsPublish(client)
@@ -136,9 +216,9 @@ class GPSDtoMQTT(AliceSkill):
 		:return: nothing
 		"""
 
-		self.logInfo("GPSD Broker disconnecting reason  "  +str(rc))
+		self.logInfo(self.randomTalk(text="systemMessage9", replace=[str(rc)]))
 		while rc != 0:
-				self.logWarning("Reconnecting to GPSD broker...")
+				self.logWarning(self.randomTalk(text="systemMessage10"))
 				rc = client.reconnect()
 
 
@@ -167,10 +247,9 @@ class GPSDtoMQTT(AliceSkill):
 		"""
 		#
 		if rc == 0:
-			self.logInfo("Connected to GPS MQTT Broker!........")
+			self.logInfo(self.randomTalk(text="systemMessage11"))
 		else:
-
-			self.logInfo("Failed to connect to GPS Broker, return code %d\n", rc)
+			self.logInfo(self.randomTalk(text="systemMessage12", replace=[rc]))
 
 
 	# MQTT publish method. This method is responsible for sending the MQTT message to Home Assistant
@@ -214,19 +293,19 @@ class GPSDtoMQTT(AliceSkill):
 
 			if status == 0 :
 				if self.getConfig(key="enableLogging"):
-					self.logWarning(f"Data sent to the topic {self.mqttTopic}/attributes... ")
-					self.logDebug(f"Sent --> `{attributePayload}` to topic ``")
-					self.logWarning(f"Data sent to the topic {self.mqttTopic}/config ....")
-					self.logDebug(f'sent --> {configPayload} ')
+					self.logWarning(self.randomTalk(text="systemMessage13", replace=[f"{self.mqttTopic}/attributes"]))
+					self.logDebug(self.randomTalk(text="systemMessage14", replace=[attributePayload]))
+					self.logWarning(self.randomTalk(text="systemMessage15", replace=[f"{self.mqttTopic}/config"]))
+					self.logDebug(self.randomTalk(text="systemMessage16", replace=[configPayload]))
 
 					# The message to display in the log file if successfull/failed
-					self.logInfo(f'GPS Data was successfully sent')
+					self.logInfo(self.randomTalk(text="systemMessage17"))
 
 				if self.getConfig(key="runTillStopped") and self.runLoop:
 					self.loopCode(client=client)
 
 			else:
-				self.logWarning(f"Failed to send GPS data to topic {self.mqttTopic}/attributes and/or {self.mqttTopic}/config")
+				self.logWarning(self.randomTalk(text="systemMessage18", replace=[f'{self.mqttTopic}/attributes',f'{self.mqttTopic}/config' ]))
 
 	def getGpsdData(self):
 		"""
@@ -239,7 +318,7 @@ class GPSDtoMQTT(AliceSkill):
 		gpsClient = GPSDClient(host="127.0.0.1") # This is where the GPSD client is running. 127.0.0.1 is the local
 		# machine so you can usually leave this as it is
 		if self.getConfig(key="enableLogging"):
-			self.logWarning(f"Raw Data from your GPS device is ...")
+			self.logWarning(self.randomTalk(text="systemMessage19"))
 		now = datetime.now()
 		self.decimalPlaces :int = self.getConfig('gpsAccuracy')
 		# Create json payload
@@ -247,7 +326,7 @@ class GPSDtoMQTT(AliceSkill):
 
 			# if you've enabled payload logging, this statement will run
 			if self.getConfig(key="enableLogging"):
-				self.logDebug(f"{result}")
+				self.logDebug(f'{result}')
 				self.logInfo("")
 
 			# TPV class is where you longitude and latitude data is in the gpsd output
@@ -277,7 +356,7 @@ class GPSDtoMQTT(AliceSkill):
 
 				return gpsPayload
 
-	# record datain a CSV file for ploting on My Google Maps
+	# record data in a CSV file for ploting on My Google Maps
 	def RecordToCSV(self, lattitude : float, longitude: float, time, speed):
 		"""
 		Checks to see if the latitude and longitude readings are different to previous value.
@@ -286,25 +365,33 @@ class GPSDtoMQTT(AliceSkill):
 
 		self.numberOfLines = self.csvFileChecks()
 		if self.getConfig(f'enableLogging'):
-			self.logDebug(f'You currently have {self.numberOfLines} stored entries in the CSV file')
+			self.logDebug(self.randomTalk(text="systemMessage20", replace=[self.numberOfLines]))
 
 		if not round(lattitude,self.decimalPlaces) == round(self.lat,self.decimalPlaces) and not round(longitude,self.decimalPlaces) == round(self.lon,self.decimalPlaces):
 			self.createCsvFile(latitude=lattitude, longitude=longitude, time=time, speed=speed)
 		else:
 			if self.getConfig('enableLogging'):
-				self.logInfo('Your position hasn\'t changed')
+				self.logInfo(self.randomTalk(text="systemMessage21"))
 
 	def createCsvFile(self, latitude:float, longitude: float, time, speed):
 		"""
 		Creates a CSV file in the skills main directory that records lattitude,longitude, time, speed and Name
 		This can later be used in googles "my maps" for example to plot your recorded locations
+		will only update if location is different to previous value
 		"""
+
+		# Gets the district name from geoLocation for use as the "name" field in the csv file
+		try:
+			getPhysicalLocation = self.getAddressByLocation(latitude=latitude, longitude=longitude)
+			theDistrict = getPhysicalLocation['address']['city_district']
+		except:
+			theDistrict = "UnKnown"
 
 		# field names
 		fields = ['Latitude', 'Longitude', 'Time', 'Speed', 'Name']
 
 		# data rows of csv file
-		rows = [ [f'{latitude}', f'{longitude}', f'{time}', f'{speed}', f'Location {self.numberOfLines}'] ]
+		rows = [ [f'{latitude}', f'{longitude}', f'{time}', f'{speed}', f'{theDistrict}'] ]
 
 		if not Path(self.csvFile).exists():
 			with open(self.csvFile, 'w+') as csvFile:
@@ -312,14 +399,14 @@ class GPSDtoMQTT(AliceSkill):
 				write = csv.writer(csvFile)
 				write.writerow(fields)
 				write.writerows(rows)
-			self.logInfo(f"Creating LocationMapper.csv file at {self.csvFile}")
+			self.logInfo(self.randomTalk(text="systemMessage22", replace=[self.csvFile]))
 		else:
 			with open(self.csvFile, 'a') as csvFile:
 				# Append the content to a new row
 				write = csv.writer(csvFile)
 				write.writerows(rows)
 			if self.getConfig(key="enableLogging"):
-				self.logInfo("Updating location mapper file")
+				self.logInfo(self.randomTalk(text="systemMessage23"))
 		csvFile.close()
 
 	def csvFileChecks(self):
@@ -339,10 +426,44 @@ class GPSDtoMQTT(AliceSkill):
 				self.lat = float(line.split(',')[0])
 				self.lon = float(line.split(',')[1])
 				if self.getConfig('enableLogging'):
-					self.logDebug(f'Latitude with "{self.decimalPlaces}" decimal places is {round(self.lat,self.decimalPlaces)}')
-					self.logDebug(f'Longitude with "{self.decimalPlaces}" decimal places is {round(self.lon,self.decimalPlaces)}')
+					self.logDebug(self.randomTalk(text="systemMessage24", replace=[self.decimalPlaces, round(self.lat,self.decimalPlaces)]))
+					self.logDebug(self.randomTalk(text="systemMessage25", replace=[self.decimalPlaces, round(self.lon,self.decimalPlaces)]))
 
 			csvFile.close()
 			return numberOfLines
 		else:
 			return 0
+
+	def getAddressByLocation(self, latitude, longitude, language="en"):
+		"""This function returns an address as raw from a location
+		will repeat until success"""
+
+		app = Nominatim(user_agent="GPSDtoMQTT")
+		# build coordinates string to pass to reverse() function
+		coordinates = f"{latitude}, {longitude}"
+
+		try:
+			return app.reverse(coordinates, language=language).raw
+		except:
+			return self.delayAddressLookup(latitude, longitude)
+
+	def delayAddressLookup(self, latitude, longitude):
+		"""
+		Delays lookup to respect the 1 lookup per second useage policy
+		"""
+
+		self.ThreadManager.doLater(
+			interval=1.3,
+			func=self.getAddressByLocation,
+			args=[
+				latitude,
+				longitude
+			]
+		)
+	@staticmethod
+	def checkInternetConnection():
+		try:
+			socket.create_connection(('www.google.com', 80))
+			return True
+		except:
+			return False

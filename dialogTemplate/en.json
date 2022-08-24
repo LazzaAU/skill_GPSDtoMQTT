@@ -33,6 +33,59 @@
 			]
 		},
 		{
+			"name": "addressLookup",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "post code"
+				},
+				{
+					"value": "postal code"
+				},
+				{
+					"value": "address"
+				},
+				{
+					"value": "name"
+				},
+				{
+					"value": "house number"
+				},
+				{
+					"value": "city district"
+				},
+				{
+					"value": "region"
+				},
+				{
+					"value": "house number"
+				},
+				{
+					"value": "road"
+				},
+				{
+					"value": "state"
+				},
+				{
+					"value": "country"
+				},
+				{
+					"value": "country code"
+				},
+				{
+					"value": "street address"
+				},
+				{
+					"value": "city"
+				},
+				{
+					"value": "where am i"
+				}
+			]
+		},
+		{
 			"name": "gpsStop",
 			"matchingStrictness": null,
 			"automaticallyExtensible": true,
@@ -87,6 +140,34 @@
 					"name": "gpsStop",
 					"required": false,
 					"type": "gpsStop",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "getAddressDetails",
+			"enabledByDefault": true,
+			"utterances": [
+				"what's my {post code:=>addressLookup}",
+				"what's my {postal code:=>addressLookup}",
+				"what's my {address:=>addressLookup}",
+				"what's my {street address:=>addressLookup}",
+				"what {street:=>addressLookup} am i on",
+				"what's the {name:=>addressLookup} of this place",
+				"what's my {house number:=>addressLookup} ",
+				"what {road:=>addressLookup} am i on",
+				"what {city:=>addressLookup} am i in",
+				"what {district:=>addressLookup} am i in",
+				"what {region:=>addressLookup} am i in",
+				"what {country:=>addressLookup} am i in",
+				"what's the {country code::=>addressLookup} here",
+				"{where am i:=>addressLookup}"
+			],
+			"slots": [
+				{
+					"name": "addressLookup",
+					"required": false,
+					"type": "addressLookup",
 					"missingQuestion": ""
 				}
 			]

@@ -12,7 +12,8 @@
 	"maintainers": [],
 	"name": "GPSDtoMQTT",
 	"pipRequirements": [
-		"gpsdclient"
+		"gpsdclient",
+		"geopy"
 	],
 	"speakableName": "GPS Data",
 	"systemRequirements": [],

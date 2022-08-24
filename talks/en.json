@@ -1,22 +1,153 @@
 {
-	"Starting": {
-		"default": [
-			"location updated",
-			"all done, location is now being tracked",
-			"Ok, GPS data is now on its way into cyber space"
-		],
-		"short": [
-			"ok"
-		]
-	},
-	"Ending": {
-		"default": [
-			"I've stopped logging GPS data",
-			"location data has been stopped",
-			"It's official, I'm no longer sending your location details"
-		],
-		"short": [
-			"GPS stopped"
-		]
-	}
+    "Ending": {
+        "default": [
+            "I've stopped logging GPS data",
+            "location data has been stopped",
+            "It's official, I'm no longer sending your location details"
+        ],
+        "short": [
+            "GPS stopped"
+        ]
+    },
+    "Starting": {
+        "default": [
+            "location updated",
+            "all done, location is now being tracked",
+            "Ok, GPS data is now on its way into cyber space"
+        ],
+        "short": [
+            "ok"
+        ]
+    },
+    "dialogMessage4": {
+        "default": [
+            "Failed to retrieve results. Please check Internet connection and try again"
+        ],
+        "short": [
+            ""
+        ]
+    },
+    "dialogMessage7": {
+        "default": [
+            "Your {0} is {1}"
+        ],
+        "short": [
+            "{1}"
+        ]
+    },
+    "systemMessage1": {
+        "default": [
+            "Stopping GPSD MQTT connection"
+        ]
+    },
+    "systemMessage10": {
+        "default": [
+            "Reconnecting to GPSD broker..."
+        ]
+    },
+    "systemMessage11": {
+        "default": [
+            "Connected to GPS MQTT Broker!........"
+        ]
+    },
+    "systemMessage12": {
+        "default": [
+            "Failed to connect to GPS Broker, return code %d\\n {0}"
+        ]
+    },
+    "systemMessage13": {
+        "default": [
+            "Data sent to the topic {0} "
+        ]
+    },
+    "systemMessage14": {
+        "default": [
+            "Sent --> {0} to topic "
+        ]
+    },
+    "systemMessage15": {
+        "default": [
+            "Data sent to the topic {0} ...."
+        ]
+    },
+    "systemMessage16": {
+        "default": [
+            "sent --> {0} "
+        ]
+    },
+    "systemMessage17": {
+        "default": [
+            "GPS Data was successfully sent"
+        ]
+    },
+    "systemMessage18": {
+        "default": [
+            "Failed to send GPS data to topic {0} and/or {1}"
+        ]
+    },
+    "systemMessage19": {
+        "default": [
+            "Raw Data from your GPS device is ..."
+        ]
+    },
+    "systemMessage2": {
+        "default": [
+            "Error in getting address details"
+        ]
+    },
+    "systemMessage20": {
+        "default": [
+            "You currently have {0} stored entries in the CSV file"
+        ]
+    },
+    "systemMessage21": {
+        "default": [
+            "Your position hasn't changed"
+        ]
+    },
+    "systemMessage22": {
+        "default": [
+            "Creating LocationMapper.csv file at {0}"
+        ]
+    },
+    "systemMessage23": {
+        "default": [
+            "Updating location mapper file"
+        ]
+    },
+    "systemMessage24": {
+        "default": [
+            "Latitude with {0} decimal places is {1}"
+        ]
+    },
+    "systemMessage25": {
+        "default": [
+            "Longitude with {0} decimal places is {1}"
+        ]
+    },
+    "systemMessage3": {
+        "default": [
+            "Failed to retrieve results. Please check Internet connection and try again "
+        ]
+    },
+    "systemMessage5": {
+        "default": [
+            "Failed to get details {0}"
+        ]
+    },
+    "systemMessage6": {
+        "default": [
+            "Your {0} is {1}"
+        ]
+    },
+    "systemMessage8": {
+        "default": [
+            "Please enter your MQTT broker details in the skill settings"
+        ]
+    },
+    "systemMessage9": {
+        "default": [
+            "GPSD Broker disconnecting reason {0}"
+        ]
+    }
 }
