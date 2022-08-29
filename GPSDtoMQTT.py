@@ -7,6 +7,7 @@ import json
 import csv
 import socket
 
+#from skills.AliceDevTools import AliceDevTools
 from geopy.geocoders import Nominatim
 from pathlib import Path
 from datetime import datetime
@@ -33,6 +34,8 @@ class GPSDtoMQTT(AliceSkill):
 		self.numberOfLines = 0
 		self.decimalPlaces :int = 3
 		self.district = ""
+		#_AliceDev is used internally by skill developer
+		#self._AliceDev = AliceDevTools.AliceDevTools()
 		super().__init__()
 
 	# Triggers from the start tracking my location intent
@@ -43,6 +46,7 @@ class GPSDtoMQTT(AliceSkill):
 			text=self.randomTalk(text='Starting'),
 			deviceUid=session.deviceUid
 		)
+
 		self.GpsdSetup()
 
 	# Stops reporting data from the stop tracking my location intent
@@ -79,7 +83,6 @@ class GPSDtoMQTT(AliceSkill):
 			return
 
 		addressSpecifics : dict = addressDetails['address']
-		#self.logInfo(f'address details are {addressSpecifics}')
 		try:
 			if "name" in session.slotValue("addressLookup"):
 				slot="name"
