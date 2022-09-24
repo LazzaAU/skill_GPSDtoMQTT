@@ -7,7 +7,6 @@ import json
 import csv
 import socket
 
-#from skills.AliceDevTools import AliceDevTools
 from geopy.geocoders import Nominatim
 from pathlib import Path
 from datetime import datetime
@@ -34,8 +33,7 @@ class GPSDtoMQTT(AliceSkill):
 		self.numberOfLines = 0
 		self.decimalPlaces :int = 3
 		self.district = ""
-		#_AliceDev is used internally by skill developer
-		#self._AliceDev = AliceDevTools.AliceDevTools()
+
 		super().__init__()
 
 	# Triggers from the start tracking my location intent
@@ -214,7 +212,7 @@ class GPSDtoMQTT(AliceSkill):
 		"""
 		Captures a MQTT disconnect event and tries to reconnect
 		:param client: The Paho MQTT client
-		:userdata: Not Used but cant delete it either
+		:param userdata: Not Used but can't delete it either
 		:param rc: The Paho MQTT code
 		:return: nothing
 		"""
@@ -242,9 +240,9 @@ class GPSDtoMQTT(AliceSkill):
 	def mqttConnectionStatus(self, client, userdata, flags, rc):
 		"""
 		Informs the user when Broker connection is established or not when first connecting
-		:client: not used
-		:userdata: not used
-		:flags: not used
+		:param client: not used
+		:param userdata: not used
+		:param flags: not used
 		:param rc: The Paho MQTT code
 		:return: Nothing
 		"""
