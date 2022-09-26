@@ -75,7 +75,7 @@ class GPSDtoMQTT(AliceSkill):
 			self.logWarning(self.randomTalk(text="systemMessage3"))
 			self.endDialog(
 				sessionId=session.sessionId,
-				text=self.randomTalk(text="dialogMessage4"),
+				text=self.randomTalk(text="FailedGettingResults"),
 				deviceUid=session.deviceUid
 			)
 			return
@@ -129,7 +129,7 @@ class GPSDtoMQTT(AliceSkill):
 		self.logInfo(self.randomTalk(text="systemMessage6", replace=[slotValue,addressValue]))
 		self.endDialog(
 			sessionId=session.sessionId,
-			text=self.randomTalk(text="dialogMessage7", replace=[slotValue, addressValue ]),
+			text=self.randomTalk(text="addressLookUp", replace=[slotValue, addressValue ]),
 			deviceUid=session.deviceUid
 		)
 

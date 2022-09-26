@@ -12,22 +12,23 @@
     "Starting": {
         "default": [
             "location updated",
-            "all done, location is now being tracked",
-            "Ok, GPS data is now on its way into cyber space"
+            "All done, location is now being tracked",
+            "Ok, GPS data is now on it's way into cyber space"
         ],
         "short": [
-            "ok"
+            "ok",
+			"Location Tracking Started"
         ]
     },
-    "dialogMessage4": {
+    "FailedGettingResults": {
         "default": [
             "Failed to retrieve results. Please check Internet connection and try again"
         ],
         "short": [
-            ""
+            "Failed to get results"
         ]
     },
-    "dialogMessage7": {
+    "addressLookUp": {
         "default": [
             "Your {0} is {1}"
         ],
