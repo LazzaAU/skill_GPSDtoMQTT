@@ -16,14 +16,14 @@ and GPS values on the topic ```homeassistant/Your_MQTT_topic/attributes```
 # *Setup on Alice* #
 
 - Install the skill, all going well gpsdclient will get installed during skill installation. 
-If for any reason it doesn't and you get a gpsdclient error install it manually with 
+If for any reason it doesn't, and you get a gpsdclient error install it manually with 
 - ```cd ~/ProjectAlice```
 - ```./venv/bin/pip3 install gpsdclient```
 - Once installed, in the skill settings of alices WebUI. you have the following options to configure..
 
 **Add**
 - Your receiving MQTT broker address EG : 192.168.1.40
-- Your MQTT port if its different from 1883
+- Your MQTT port if it's different from 1883
 - Your MQTT password and username if required
 - Your "GPS device name" , this is the name you give the GPS device and will become part of the mqtt topic. 
  A name like "myGPSReciever" (don't use spaces) not vital what you call it as long as its configured later in
@@ -31,7 +31,7 @@ Home Assistant the same.
 - Turn on logging if you want to see debug information
 - Enable "run on boot" if you want the gps data to just be sent when alice boots up
 - Enable "log till stopped" if you want constant messages sent at a set interval.
-Otherwise just one message will be sent if this is disabled.
+Otherwise, just one message will be sent if this is disabled.
 - Set the "seconds between messages" for the interval between sending the location data. default is 300 seconds (5 minutes)
 - gps Accuracy - set the decimal places you want to use for comparing your location of now and previous location coordinates. 
 This is used for determining if the location coordinates should be written to the csv file or not. 
@@ -42,7 +42,8 @@ location changes to the CSV file. The default value is 3 and in general is suffi
 # *Setup if using Home Assistant* #
 
 Add the below to your configuration.yaml
-```commandline
+
+```
 mqtt:
   device_tracker:
     - name: "Caravan GPS receiver"
@@ -53,9 +54,9 @@ mqtt:
 ```
 remember to change the "caravan_gps_reciever" to what ever you called the device name in the alice setup
 
-Now make a automation in Home assistant that uses ```homeassistant.set_location``` as the action. example is below
+Now make an automation in Home assistant that uses ```homeassistant.set_location``` as the action. example is below
 
-```commandline
+```
 - id: 1a06fb2f81d949c8ad6c1ff95b4d4d7c
  alias: Update Home Location
  trigger:
@@ -76,7 +77,7 @@ again... change "caravan_gps_reciever" to what you used as devicename
 
 
 # Alice control #
-If you don't enable "run on boot" from the settings you can also trigger location update by asking alice to ..
+If you don't enable "run on boot" from the settings you can also trigger location update by asking alice to.
 
 - track my location
 - update my location
@@ -105,13 +106,13 @@ and map out where you've been.
 You can also ask Alice questions regarding your location such as 
 - What's my address
 - What's my post code
-- Where am i ?
-- what road am i on ?
+- Where am I ?
+- What road am I on ?
 
 and similar questions. Alice will then take your latitude and longitude details and convert them to a
 physical location. This is handy for us travellers such as caravanners, boaties and the likes that are
-always changing location. One of the issue i hate when travelling is having to look 
-up the new address and post code etc when ordering off amazon, now i can simply ask Alice, "what's my post code"
+always changing location. One of the issue I hate when travelling is having to look 
+up the new address and post code etc. when ordering off amazon, now I can simply ask Alice, "what's my post code"
 or "what's my street address"
 
 NOTE: You need Internet connection for this to work
